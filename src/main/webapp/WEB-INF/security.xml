@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security" 
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+	http://www.springframework.org/schema/security
+  	http://www.springframework.org/schema/security/spring-security.xsd">
+
+
+	<global-method-security pre-post-annotations="enabled" />
+
+	<http use-expressions="true">
+		<intercept-url pattern="/files/**" access="permitAll" />
+		<intercept-url pattern="/other-files/**/" access="permitAll"  />
+		<intercept-url pattern="/resources/**" access="permitAll" />
+		<intercept-url pattern="**/resources/**" access="permitAll" />
+		<intercept-url pattern="/app/blog/**" access="permitAll"/>
+		<intercept-url pattern="/auth/**" access="isAuthenticated()"/>
+		<intercept-url pattern="/teacher/**" access="hasRole('TEACHER')"/>
+		<intercept-url pattern="/course/development/**" access="hasRole('TEACHER')"/>
+		<intercept-url pattern="/student/**" access="hasRole('STUDENT')"/>
+		<intercept-url pattern="/courses/enroll/**" access="hasRole('STUDENT')"/>
+		<intercept-url pattern="/resources/**" access="hasRole('STUDENT')"/>
+		<form-login login-page="/login.html"/>
+		<logout logout-url="/logout"/>
+		<csrf disabled="true"/>
+	</http>
+	
+	
+
+	<authentication-manager>
+	<authentication-provider>
+		<!-- <user-service>
+		  <user name="teacher"  password="test" authorities="ROLE_TEACHER" />
+		  <user name="student"  password="test" authorities="ROLE_STUDENT" />
+		</user-service> -->
+		<jdbc-user-service data-source-ref="dataSource"
+				authorities-by-username-query="select USER_NAME , USER_TYPE from USERS where USER_NAME=?"
+				users-by-username-query="select USER_NAME , password, USER_ENABLED from USERS where USER_NAME=?" />
+	</authentication-provider>
+	</authentication-manager>
+
+</beans:beans>
